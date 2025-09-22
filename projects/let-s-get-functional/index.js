@@ -175,11 +175,45 @@ var friendsCount = function(array, name){
 //o: array, of top 3 tags
 //Find the three most common tags among all customers' associated tags
 var topThreeTags = function(array){
-  //can use reduce with seed []
-  let tags = _.reduce(array, function(acc, customer){
-      // customer.tags
+  //making an array of all tags. ARRAY OF ARRAYS
+let filtered = array.map(value => value.tags);
+//now making that array into one single array of all tags
+let oneArray = filtered.flat();
+// console.log(oneArray); 
+
+//make object to track how many times each tag occurs in array
+let countEach = function(array){
+  //returns an object
+  return array.reduce((acc, tag) => {
+    // assigning acc[tag] to either acc[tag] (if not 1st) or 0. +1 each time
+    acc[tag] = (acc[tag] || 0) + 1;
+    //returning acc
     return acc;
-  }, []);
+  }, {});
+};
+// console.log(countEach(oneArray));
+ 
+//assigning reult of calling countEach(oneArray) to a variable
+let counterObj = countEach(oneArray); // object 
+//then making the object into an array of arrays
+  // each element in array is array of previous key/value pair
+let objToArr = Object.entries(counterObj);
+// console.log(objToArr); // array of arrays [ ["bye, 2"], etc]
+
+//sorting each array in array by its second index value, descending 
+  // sort takes a and b. starts with b at index 1 and descends to a at index 1
+let objToArrSort = objToArr.sort((a, b) => b[1] - a[1]);
+// console.log(objToArrSort); 
+//now i just want the top/first three elements in objToArraySort, so slice first 3
+let firstThreeArrays = objToArrSort.slice(0,3);
+// console.log(firstThreeArrays); // array of first 3 arrays
+//now i need to extract the first values of each array (the key) and return in one array
+//map does something to each value, returns array
+  //mapping the first element of each array, returning array
+let justThreeKeys = firstThreeArrays.map(arr => arr[0]);
+// console.log(justThreeKeys); // ["hair", "on", "cheese"]
+//return array of tpop 3 keys 
+return justThreeKeys;
 
 };
 
@@ -204,7 +238,8 @@ let nonBinary = array.filter(cust => cust.gender === "non-binary");
     acc.female = females.length;
     acc.male = males.length;
     acc["non-binary"] = nonBinary.length;
-    return acc
+    return acc;
+
   }, {}); // <-- seed is object
   return genderObj;
 };
